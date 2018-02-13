@@ -1,0 +1,23 @@
+{
+    "name": "octopus/qiscus-sdk-php-rest",
+    "type": "library",
+    "require": {
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "authors": [
+        {
+            "name": "octopus",
+            "email": "ahyana1995@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "QiscusRest\\": "src/QiscusRest",
+            "QiscusRest\\MessageBuilder\\": "src/QiscusRest/MessageBuilder"
+        },
+        "classmap": [
+            "src/QiscusSDK.php",
+            "src/MessageBuilder"
+        ]
+    }
+}
