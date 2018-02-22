@@ -14,10 +14,6 @@
         "psr-4": {
             "QiscusRest\\": "src/QiscusRest",
             "QiscusRest\\MessageBuilder\\": "src/QiscusRest/MessageBuilder"
-        },
-        "classmap": [
-            "src/QiscusSDK.php",
-            "src/MessageBuilder"
-        ]
+        }
     }
 }

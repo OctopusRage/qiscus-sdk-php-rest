@@ -27,7 +27,6 @@ class TextMessageBuilder implements MessageBuilder
     public function buildMessage() {
         return  [
             'message' => $this->message,
-            'extras' => $this->extras,
         ];
     }
 }

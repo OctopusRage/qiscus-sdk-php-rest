@@ -20,7 +20,7 @@ class QiscusSDK
     {
         $this->appId = $appId;
         $this->secretKey = $secretKey;
-        $this->httpClient = new Client(['base_uri' => $appId.'.qiscus.com']);
+        $this->httpClient = new Client(['base_uri' => 'https://' . $appId.'.qiscus.com']);
     }
 
 
@@ -60,8 +60,8 @@ class QiscusSDK
 
     public function getOrCreateRoom(array $emails, array $options = []){
         $payload = [
-            'emails' => $emails,
-            'options' => $options
+            'user_ids' => $emails,
+            'room_options' => json_encode($options)
         ];
         try{
             $response = $this->httpRequestPost('/api/v2.1/rest/get_or_create_room_with_target', $payload);
@@ -69,6 +69,23 @@ class QiscusSDK
             throw $e;
         }
         return $response->room;
+    }
+
+    public function postComment(string $userId, string $roomId, MessageBuilder $messageBuilder){
+        try{
+            $payload = array_merge(
+                [
+                    'user_id' => $userId,
+                    'room_id' => $roomId
+                ],
+                $messageBuilder->buildMessage()
+            );
+            var_dump($payload);
+            $response = $this->httpRequestPost('api/v2.1/rest/post_comment', $payload);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $response->comment;
     }
 
     private function httpRequestPost(string $uri, array $payload){
@@ -88,12 +105,22 @@ class QiscusSDK
             $response_json = json_decode((string) $response_body);
 
             $errors = '';
-            if (property_exists($response_json->error, 'detailed_messages')) {
-                $errors = join(', ', $response_json->error->detailed_messages);
+            $statusCode = $exception->getResponse()->getStatusCode();
+            if($statusCode==404){
+                throw new \Exception('Page not found', $statusCode);
+            }
+            if(!empty($response_json->error)) {
+                if (property_exists($response_json->error, 'detailed_messages')) {
+                    $errors = join(', ', $response_json->error->detailed_messages);
+                }
             }
 
-            throw new \Exception($response_json->error->message . ': ' . $errors, $exception->getResponse()->getStatusCode());
-        } catch (\Exception $e) {
+            if(empty($errors)) $errors = 'Something went wrong';
+
+            var_dump($statusCode);
+            throw new \Exception($errors, $statusCode);
+        }
+        catch (\Exception $e) {
             throw new \Exception($e->getMessage());
         }
         return json_decode($response->getBody())->results;
