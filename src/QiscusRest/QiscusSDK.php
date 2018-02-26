@@ -24,6 +24,33 @@ class QiscusSDK
     }
 
 
+    public function loginOrRegister(string $userId, string $userName, string $password = null, string $avatarUrl = null){
+        try{
+            $payload = [
+                'user_id'       => $userId,
+                'password'      => $password,
+                'username'      => $userName,
+                'avatar_url'    => $avatarUrl,
+            ];
+            $response = $this->httpRequestPost('api/v2.1/rest/login_or_register', $payload);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $response->user;
+    }
+
+    public function userProfile(string $userId){
+        try{
+            $payload = [
+                'user_id' => $userId,
+            ];
+            $response = $this->httpRequestGet('api/v2.1/rest/user_profile', $payload);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $response->user;
+    }
+
 
     public function chatWithTarget(string $userId, string $destinationEmail, MessageBuilder $messageBuilder){
         try{
@@ -97,6 +124,44 @@ class QiscusSDK
                     'QISCUS_SDK_SECRET' => $this->secretKey
                 ],
                 RequestOptions::JSON => $payload
+            ]);
+        } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
+            // docs.guzzlephp.org/en/latest/quickstart.html#exceptions
+            // for 500-level errors or 400-level errors
+            $response_body = $exception->getResponse()->getBody(true);
+            $response_json = json_decode((string) $response_body);
+
+            $errors = '';
+            $statusCode = $exception->getResponse()->getStatusCode();
+            if($statusCode==404){
+                throw new \Exception('Page not found', $statusCode);
+            }
+            if(!empty($response_json->error)) {
+                if (property_exists($response_json->error, 'detailed_messages')) {
+                    $errors = join(', ', $response_json->error->detailed_messages);
+                }
+            }
+
+            if(empty($errors)) $errors = 'Something went wrong';
+
+            var_dump($statusCode);
+            throw new \Exception($errors, $statusCode);
+        }
+        catch (\Exception $e) {
+            throw new \Exception($e->getMessage());
+        }
+        return json_decode($response->getBody())->results;
+    }
+
+    private function httpRequestGet(string $uri, array $payload){
+        try{
+            $response = $this->httpClient->get($uri, [
+                RequestOptions::HEADERS => [
+                    'Accept' => 'application/json',
+                    'QISCUS_SDK_APP_ID' => $this->appId,
+                    'QISCUS_SDK_SECRET' => $this->secretKey
+                ],
+                RequestOptions::QUERY => $payload
             ]);
         } catch (\GuzzleHttp\Exception\BadResponseException $exception) {
             // docs.guzzlephp.org/en/latest/quickstart.html#exceptions
