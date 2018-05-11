@@ -107,7 +107,7 @@ class QiscusSDK
                 ],
                 $messageBuilder->buildMessage()
             );
-            var_dump($payload);
+
             $response = $this->httpRequestPost('api/v2.1/rest/post_comment', $payload);
         } catch (\Exception $e) {
             throw $e;
@@ -133,6 +133,7 @@ class QiscusSDK
 
             $errors = '';
             $statusCode = $exception->getResponse()->getStatusCode();
+
             if($statusCode==404){
                 throw new \Exception('Page not found', $statusCode);
             }
@@ -144,7 +145,6 @@ class QiscusSDK
 
             if(empty($errors)) $errors = 'Something went wrong';
 
-            var_dump($statusCode);
             throw new \Exception($errors, $statusCode);
         }
         catch (\Exception $e) {
@@ -182,7 +182,6 @@ class QiscusSDK
 
             if(empty($errors)) $errors = 'Something went wrong';
 
-            var_dump($statusCode);
             throw new \Exception($errors, $statusCode);
         }
         catch (\Exception $e) {

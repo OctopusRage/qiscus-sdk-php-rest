@@ -18,7 +18,7 @@ class TextMessageBuilder implements MessageBuilder
      * @param $message
      * @param string $extras
      */
-    public function __construct(string $message, $extras = '')
+    public function __construct(string $message, $extras = [])
     {
         $this->message = $message;
         $this->extras = $extras;
