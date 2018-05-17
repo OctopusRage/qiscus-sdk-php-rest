@@ -44,4 +44,12 @@ try {
 } catch (\Exception $e) {
     var_dump('FAILED POST COMMENT BUTTONS'. $e->getMessage(). ' '.$e->getCode());
 }
+
+$messageBuilder = new \QiscusRest\MessageBuilder\LocationMessageBuilder('Plaza', 'Jalan C Simanjuntak No.70, ',1213.222,1223223.222, 'https://goo.gl/maps/nkY2DBF1quM2');
+try {
+    $postComment = $client->postComment('ahyana1995@gmail.com', $room->room_id, $messageBuilder);
+    echo 'SUCCESS POST COMMENT LOCATION</br>';
+} catch (\Exception $e) {
+    var_dump('FAILED POST COMMENT LOCATION'. $e->getMessage(). ' '.$e->getCode());
+}
 echo json_encode($messageBuilder->buildMessage());
