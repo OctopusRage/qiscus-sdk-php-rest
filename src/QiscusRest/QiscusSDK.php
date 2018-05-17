@@ -51,6 +51,22 @@ class QiscusSDK
         return $response->user;
     }
 
+    public function createRoom(string $roomName, array $participants, string $creator, string $roomAvatarUrl='', string $roomOptions ='') {
+        if ($roomOptions != '' && !$this->isJson($roomOptions)) throw new \Exception('room options must be json');
+        try{
+            $payload = [
+                'room_name'         => $roomName,
+                'participants'      => $participants,
+                'creator'           => $creator,
+                'room_avatar_url'   => $roomAvatarUrl,
+                'room_options'      => $roomOptions
+            ];
+            $response = $this->httpRequestPost('api/v2.1/rest/create_room', $payload);
+        } catch (\Exception $e) {
+            throw $e;
+        }
+        return $response->room;
+    }
 
     public function chatWithTarget(string $userId, string $destinationEmail, MessageBuilder $messageBuilder){
         try{
@@ -188,6 +204,11 @@ class QiscusSDK
             throw new \Exception($e->getMessage());
         }
         return json_decode($response->getBody())->results;
+    }
+
+    private function isJson($string){
+        json_decode($string);
+        return (json_last_error() == JSON_ERROR_NONE);
     }
 
 }
