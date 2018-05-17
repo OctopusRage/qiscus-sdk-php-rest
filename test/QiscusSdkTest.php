@@ -32,9 +32,16 @@ $buttons = [$button1, $button2];
 $messageBuilder = new \QiscusRest\MessageBuilder\CardMessageBuilder('hello selamat datang', 'https://cdn0.iconfinder.com/data/icons/social-15/200/mail-icon-128.png','no body cares', 'ini adalah ....' ,'https://www.google.com', $buttons);
 try {
     $postComment = $client->postComment('ahyana1995@gmail.com', $room->room_id, $messageBuilder);
-    echo 'SUCCESS POST COMMENT FILE ATTACHMENT</br>';
+    echo 'SUCCESS POST COMMENT CARD</br>';
 } catch (\Exception $e) {
     var_dump('FAILED POST COMMENT TEXT'. $e->getMessage(). ' '.$e->getCode());
 }
 
+$messageBuilder = new \QiscusRest\MessageBuilder\ButtonMessageBuilder('hai', $buttons);
+try {
+    $postComment = $client->postComment('ahyana1995@gmail.com', $room->room_id, $messageBuilder);
+    echo 'SUCCESS POST COMMENT BUTTONS</br>';
+} catch (\Exception $e) {
+    var_dump('FAILED POST COMMENT BUTTONS'. $e->getMessage(). ' '.$e->getCode());
+}
 echo json_encode($messageBuilder->buildMessage());
